@@ -53,13 +53,34 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        $validator = $this->validator($request->all());
 
+        $rules = [
+            'f_name'    =>  'required|max:190',
+            'l_name'    =>  'required|max:190',
+            'email'     =>  'required|email|unique:users|max:190',
+            'password'  =>  'required|min:6',
+        ];
+        $messages = [
+            'f_name.required'    =>  'First name is required.',
+            'l_name.required'    =>  'Last name is required.',
+            'f_name.max'         =>  'First name should not exceed 15 characters.',
+            'l_name.max'         =>  'Last name should not exceed 15 characters.',
+            'email.unique'       =>  'This email already exist.',
+        ];
+        $validator = Validator::make($request->all(), $rules,$messages);
         if($validator->fails()){
-            return response()->json(['status'=>false,'errors'=>$validator->errors()]);
+            return response()->json(['status'=>false,'errors'=>$validator->errors()],422);
         }
 
-        $user = $this->create($request->all());
+        $user = new User();
+        $user->role_id = 2;
+        $user->f_name = $request->f_name;
+        $user->l_name = $request->l_name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        if(!$user->save()){
+            return response()->json(['status'=>false,'msg'=>'Something went wrong. Please try again or contact support.']);
+        }
         $token = $this->auth->attempt($request->only('email','password'));
         return response()->json(['status'=>true,'user'=>$user,'token'=>$token]);
     }

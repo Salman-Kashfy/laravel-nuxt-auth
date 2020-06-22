@@ -20,6 +20,7 @@ Route::group(['middleware'=>'throttle:20,5'],function (){
 });
 
 Route::group(['middleware'=>'jwt.auth'],function (){
-    Route::get('/test','API\MeController@test');
+    Route::get('/user','API\UserController@user');
+    Route::post('/refresh','API\Auth\LoginController@refresh');
     Route::get('/logout','API\MeController@logout');
 });
