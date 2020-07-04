@@ -1,7 +1,6 @@
 <template>
     <div class="d-inline">
-        <nuxt-link to="/login" class="text-decoration-none"><v-btn depressed="" class="text-transform-inherit mr-1">Log In</v-btn></nuxt-link>
-        <nuxt-link to="/signup" class="text-decoration-none"><v-btn color="text-transform-inherit blue lighten-1 white--text">Sign Up</v-btn></nuxt-link>
+        <nuxt-link to="/login" class="text-decoration-none"><v-btn depressed="" class="mr-2 googlesans-regular">log in</v-btn></nuxt-link><nuxt-link to="/signup" class="text-decoration-none"><v-btn color="primary white--text googlesans-regular">Sign Up</v-btn></nuxt-link>
     </div>
 </template>
 

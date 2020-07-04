@@ -22,7 +22,6 @@
 a,a:hover{
   text-decoration: none;
 }
-
 .shadow-none{
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
@@ -51,9 +50,52 @@ a,a:hover{
 img{
   max-width: 100%;
 }
+.text-capitalize{
+  text-transform: capitalize;
+}
 .swal2-toast .swal2-title{
   font-family: Roboto;
   font-weight: 400 !important;
+}
+#man-nav-tabs .v-tab{
+  font-size: 14px;
+  text-transform: capitalize;
+  letter-spacing: 0;
+}
+#desktop-top-nav{
+  z-index: 2;
+  -webkit-box-shadow: 0 0.125rem 0.20rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0.125rem 0.20rem rgba(0, 0, 0, 0.075);
+}
+#banner{
+  position: relative;
+  min-height: 300px;
+  max-height: 440px;
+  overflow: hidden;
+}
+#banner h1{
+  font-size: 45px;
+  line-height: 1.2;
+}
+#secondary-menu{
+  z-index: 1;
+}
+.course-item h2{
+  word-break: break-word;
+  line-height: 1.4 !important;
+}
+/* Change the white to any color ;) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active  {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+#github-social::before {
+  margin-left: -2px !important;
+}
+.v-list-item .v-list-item {
+  padding-left: 0;
 }
 @media only screen and (max-width: 767px) {
   h1,.h1{

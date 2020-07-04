@@ -11,12 +11,12 @@ export default {
     ** See https://nuxtjs.org/api/configuration-head
     */
     head: {
-        titleTemplate: '%s - ' + process.env.npm_package_name,
-        title: process.env.npm_package_name || '',
+        titleTemplate: '%s',
+        title: 'ReviewsApp' || '',
         meta: [
             {charset: 'utf-8'},
             {name: 'viewport', content: 'width=device-width, initial-scale=1'},
-            {hid: 'description', name: 'description', content: process.env.npm_package_description || ''}
+            {hid: 'description', name: 'description', content: 'Write and create review and courses.'}
         ],
         link: [
             {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'},
@@ -33,14 +33,20 @@ export default {
                     user: {
                         url: 'user', method: 'get', propertyName: 'data'
                     },
-                    logout: {
-                        url: 'logout', method: 'get'
-                    },
                     refresh: {
-                        url: 'refresh', method: 'post'
+                        url: 'refresh', method: 'post', propertyName: 'data'
+                    },
+                    logout: {
+                        url: 'logout', method: 'post'
                     },
                 },
             }
+        },
+        redirect: {
+            login: '/login',
+            logout: '/',
+            callback: '/login',
+            home: false
         },
         plugins: [
             '~/plugins/redirect.js',
@@ -54,6 +60,10 @@ export default {
     ],
     env: {
         API_URL: 'http://reviews.me/api',
+        CLIENT_URL: 'http://localhost:3000',
+        STORAGE: 'http://reviews.me/storage',
+        JWT_REFRESH_TIME: 3000, // In seconds,
+        PER_PAGE: 5
     },
     axios: {
         baseURL: 'http://reviews.me/api',
@@ -71,7 +81,7 @@ export default {
         { src: '~plugins/sweetalert2.js', mode: 'client' }
     ],
     router: {
-        middleware: ['clearValidationErrors','refreshJWT']
+        middleware: ['clearValidationErrors']
     },
     /*
     ** Nuxt.js dev-modules
@@ -89,6 +99,7 @@ export default {
     ** vuetify module configuration
     ** https://github.com/nuxt-community/vuetify-module
     */
+    loading: {color: colors.blue.darken2},
     vuetify: {
         customVariables: ['~/assets/variables.scss'],
         theme: {
@@ -119,6 +130,5 @@ export default {
             allChunks: true,
             ignoreOrder: true
         },
-    },
-    watchLoggedIn: true
+    }
 }

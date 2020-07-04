@@ -8,5 +8,4 @@ export default {
             return `${user.f_name} ${user.l_name}`
         }
     }
-
 }

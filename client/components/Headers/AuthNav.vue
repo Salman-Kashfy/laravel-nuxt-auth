@@ -1,19 +1,19 @@
 <template>
     <div class="d-inline">
         <nuxt-link to="/auth" class="text-decoration-none"><v-btn color="primary" text>Auth</v-btn></nuxt-link>
-        <v-menu offset-y left min-width="150">
+        <v-menu offset-y left min-width="200">
             <template v-slot:activator="{ on, attrs }">
                 <v-avatar :tile="false" :size="'40'" v-bind="attrs" v-on="on">
                     <Avatar :src="avatar" :alt="getUserFullName()"/>
                 </v-avatar>
             </template>
-            <div class="d-flex pl-4 pr-4 pt-4">
-                <v-avatar :tile="false" :size="'25'" v-bind="attrs" v-on="on">
+            <div class="d-flex pl-4 pr-4 pt-4" style="background-color: #fff !important;">
+                <v-avatar :tile="false" :size="'25'" v-bind="attrs" v-on="on" class="text-capitalize">
                     <Avatar :src="avatar" :alt="getUserFullName()"/>
                 </v-avatar>
                 <div class="pl-3">
-                    <p class="d-block primary--text mb-0" style="line-height: 0.8">{{ getUserFullName() }}</p>
-                    <p class="mb-0"><small class="blue-grey--text lighten-4">Role</small></p>
+                    <p class="d-block primary--text mb-0 text-capitalize" style="line-height: 0.8">{{ getUserFullName() }}</p>
+                    <p class="mb-0"><small class="blue-grey--text lighten-4">{{ user.role_name }}</small></p>
                 </div>
             </div>
             <v-list class="pt-0">
@@ -44,10 +44,11 @@
         name: "AuthNav",
         data(){
             return {
-                user: null,
+                user: {},
                 attrs: null,
                 avatar: '',
                 on: {data:'user-on-dropdown'},
+                storage: process.env.STORAGE,
                 items: [
                     { title: 'Click Me' },
                     { title: 'Click Me' },
@@ -55,8 +56,10 @@
                 ]
             }
         },
-        mounted(){
-
+        computed:{
+            ...mapState({
+                loggedIn: state => state.auth.loggedIn,
+            })
         },
         methods: {
             async logout(){
@@ -68,7 +71,7 @@
         },
         beforeMount(){
             this.user = this.$store.state.auth.user;
-            this.avatar = this.user.avatar ? this.user.avatar : null;
+            this.avatar = this.user.avatar ? `${this.storage}/users/thumbnail/${this.user.avatar}` : null;
         },
         components: {
             Avatar

@@ -1,19 +1,14 @@
 <template>
     <v-container fill-height>
-        <v-row class="mb-4">
-            <v-spacer></v-spacer>
-            <nuxt-link to="/" class="text-decoration-none"><v-btn class="blue lighten-1 white--text" small fab>
-                <v-icon>home</v-icon></v-btn>
-            </nuxt-link>
-        </v-row>
+        <SigningHeader/>
         <div class="d-table w-100 h-100">
             <div class="d-table-cell h-100">
                 <v-row class="white pt-8 pb-8 pl-10 pr-10 shadow" style="border-radius: 20px;">
                     <div class="col-md-5">
-                        <h1 class="googlesans-regular mb-3 text-center font-weight-light" style="font-size: 20px;">Create your account</h1>
+                        <h1 class="googlesans-regular mb-3 text-center font-weight-light" style="font-size: 20px;">{{ title }}</h1>
                         <Socialite/>
                         <p class="text-center mb-0 blue-grey--text darken-4">or create your email account</p>
-                        <v-form ref="form" id="login-form">
+                        <v-form ref="form" id="login-form" @submit.prevent="signup_local">
                             <v-row>
                                 <v-col cols="12" sm="6">
                                     <v-text-field
@@ -63,7 +58,7 @@
                                 </v-col>
                             </v-row>
                             <div class="mt-5 mb-5">
-                                <v-btn color="text-transform-inherit blue lighten-1 white--text" :loading="loading" :disabled="loading||disabled" block @click="signup_local">Create Account</v-btn>
+                                <v-btn type="submit" color="googlesans-regular blue lighten-1 white--text" :loading="loading" :disabled="loading||disabled" block>Create Account</v-btn>
                             </div>
                             <div class="text-center">
                                 Already have an account? <nuxt-link class="text-decoration-none" color="primary" to="/login">Log in</nuxt-link>
@@ -81,19 +76,26 @@
 <script>
     import validation from "@/mixins/validation";
     import Socialite from"@/components/Social/Socialite";
+    import SigningHeader from"@/components/Headers/SigningHeader";
 
     export default {
         layout: 'blank',
         middleware: ['guest'],
         name: "signup",
+        head () {
+            return {
+                title: this.title
+            }
+        },
         data() {
             return {
-                title: 'Login',
+                title: 'Create your account',
                 form: this.$vform({
                     f_name: '',
                     l_name: '',
                     email: '',
                     password: '',
+                    email_url: `${process.env.CLIENT_URL}/confirm-email`,
                 }),
                 loading: false,
                 disabled: false,
@@ -107,7 +109,7 @@
                 try{
                     await this.$axios.post(`${process.env.API_URL}/register`,this.form).then((response)=>{
                         this.loading = false;
-                        if(response.status){
+                        if(response.data.status){
                             this.$auth.login({data: this.form});
                             this.loading = false;
                             Toast.fire({
@@ -133,7 +135,7 @@
             target.appendChild(img)
         },
         components:{
-            Socialite
+            Socialite,SigningHeader
         },
         mixins: [validation]
     }

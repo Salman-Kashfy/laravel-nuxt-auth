@@ -1,11 +1,6 @@
 <template>
     <v-container fill-height>
-        <v-row class="mb-4">
-            <v-spacer></v-spacer>
-            <nuxt-link to="/" class="text-decoration-none"><v-btn class="blue lighten-1 white--text" small fab>
-                <v-icon>home</v-icon></v-btn>
-            </nuxt-link>
-        </v-row>
+        <SigningHeader/>
         <div class="d-table w-100 h-100">
             <div class="d-table-cell h-100">
                 <v-row class="white" style="border-radius: 20px;">
@@ -13,10 +8,10 @@
                     <div class="offset-1"></div>
                     <div class="col-md-4 pr-3 pr-md-0">
                         <div class="pt-8 pb-6 pl-8 pr-8 shadow" style="border-radius: 20px;">
-                            <h1 class="googlesans-regular mb-3 text-center font-weight-light" style="font-size: 20px;">Login to your account</h1>
+                            <h1 class="googlesans-regular mb-3 text-center font-weight-light" style="font-size: 20px;">{{ title }}</h1>
                             <Socialite/>
-                            <p class="text-center mb-0 blue-grey--text darken-4">or use your email account</p>
-                            <v-form ref="form" id="login-form">
+                            <p class="text-center mb-3 blue-grey--text darken-4">or use your email account</p>
+                            <v-form ref="form" id="login-form" @submit.prevent="login">
                                 <v-text-field
                                         label="Email"
                                         name="email"
@@ -40,13 +35,13 @@
                                         hint="At least 6 characters"
                                         :rules="errors.password ? [errors.password[0]] : []"
                                 ></v-text-field>
-                                <v-checkbox v-model="form.remember" :label="`Remember Me`"></v-checkbox>
+                                <!--<v-checkbox v-model="form.remember" :label="`Remember Me`" value="1"></v-checkbox>-->
                                 <div class="mt-5 mb-5">
-                                    <v-btn depressed="" :loading="loading" color="text-transform-inherit blue lighten-1 white--text" @click="login">Sign in</v-btn>
-                                    <nuxt-link class="text-decoration-none" to="/signup"><v-btn depressed="" color="primary" text>Create Account</v-btn></nuxt-link>
+                                    <v-btn type="submit" depressed="" :loading="loading" color="blue lighten-1 googlesans-regular white--text">Sign in</v-btn>
+                                    <nuxt-link class="text-decoration-none googlesans-regular" to="/signup"><v-btn depressed="" color="primary" text>Create Account</v-btn></nuxt-link>
                                 </div>
                                 <div class="text-center">
-                                    <nuxt-link class="text-decoration-none" to="/"><v-btn depressed="" class="text-transform-inherit" text>Forgot Password?</v-btn></nuxt-link>
+                                    <nuxt-link class="text-decoration-none" to="/forgot-password"><v-btn depressed="" class="text-transform-inherit googlesans-regular" text>Forgot Password?</v-btn></nuxt-link>
                                 </div>
                             </v-form>
                         </div>
@@ -60,30 +55,34 @@
 <script>
     import validation from "@/mixins/validation";
     import Socialite from"@/components/Social/Socialite";
+    import SigningHeader from"@/components/Headers/SigningHeader";
 
     export default {
         layout: 'blank',
         middleware: ['guest'],
         name: "login",
+        head () {
+            return {
+                title: this.title
+            }
+        },
         data() {
             return {
-                title: 'Login',
+                title: 'Login to your account',
                 form: this.$vform({
-                    email: '',
-                    password: '',
-                    remember: false,
+                    email: 'salmankashfy@gmail.com',
+                    password: 'testing123',
+                    remember: null,
                 }),
                 loading: false,
                 hide_password: true,
-                login_image: '',
-
             }
         },
         mounted(){
             let img = new Image();
             img.src = require('~/static/login-image.png');
             let target =document.getElementById('login-image');
-            target.appendChild(img)
+            target.appendChild(img);
         },
         methods:{
             async login(){
@@ -93,13 +92,14 @@
                     let redirect = this.$route.query.redirect ? this.$route.query.redirect : { name: 'index' };
                     this.$router.push(redirect)
                 }catch (e) {
+                    console.log(e)
                     this.$refs.form.validate();
                     this.loading = false;
                 }
             }
         },
         components:{
-            Socialite
+            Socialite,SigningHeader
         },
         mixins: [validation]
     }

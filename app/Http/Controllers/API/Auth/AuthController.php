@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\Helper;
 use App\Providers\RouteServiceProvider;
+use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
-class LoginController extends Controller
+class AuthController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -55,16 +58,10 @@ class LoginController extends Controller
     public function login(Request $request)
     {
 
-        $credentials = $request->only('email', 'password');
-        $validator = Validator::make($credentials, [
+        $this->validate($request,[
             'email' =>  'required|email',
             'password' =>  'required|min:6',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(array('status' => false, 'errors' => $validator->errors()),422);
-        }
-
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and
@@ -82,12 +79,25 @@ class LoginController extends Controller
         $this->incrementLoginAttempts($request);
 
         try{
-            $token = $this->auth->attempt($request->only('email','password'));
+            $token = $this->auth->attempt($request->only('email', 'password'));
             if(!$token) return response()->json(['status'=> false,'errors'=> ['email'=>['Invalid email or password.']]],422);
         }catch (JWTException $e){
             return response()->json(['status'=> false,'error'=> $e->getMessage()]);
         }
-        return response()->json(['status'=> true,'user'=> $request->user(),'token'=> $token],200);
+
+        $user = $request->user();
+        $db_user = Helper::getUserAllowedKeys($request->user(),$user->role);
+        return response()->json(['status'=> true,'user'=> $db_user,'token'=> $token],200);
+    }
+
+    /**
+     * Log the user out (Invalidate the token)
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(){
+        $this->auth->invalidate();
+        return response()->json(['status'=> true]);
     }
 
     public function refresh(){
@@ -105,8 +115,7 @@ class LoginController extends Controller
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => $this->guard()->factory()->getTTL() * 60
+            'token_type' => 'bearer'
         ]);
     }
 
